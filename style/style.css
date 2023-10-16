@@ -1,0 +1,34 @@
+html, body {
+    width: 100%;
+    margin: 0;
+}
+
+* {
+    font-family:'Courier New', Courier, monospace;
+}
+
+#title {
+    margin: 5vw;
+}
+
+#solution {
+    width: 50vw;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 2vw;
+}
+
+#formula {
+    scale: 2;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
