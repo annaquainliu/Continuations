@@ -1,46 +1,47 @@
-import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+// import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
 
-window.onload = () => {
-    const body = document.getElementById("solution")
-    const SatSolver = new SolveSat();
-    const button = document.querySelector("button");
-    const input = document.getElementById("formula");
+// window.onload = () => {
+//     const body = document.getElementById("solution")
+//     const SatSolver = new SolveSat();
+//     const button = document.querySelector("button");
+//     const input = document.getElementById("formula");
 
-    button.addEventListener("click", () => {
-        let formula = parseInput(input.value);
-    })
-}
+//     button.addEventListener("click", () => {
+//         let formula = parseInput(input.value);
+//     });
+// }
+
 /**
  * 
  * @param {String} input 
  * @returns {BooleanFormula}
  */
 function parseInput(input) {
-    let fields = input.split(" ");
+    input = input.toLowerCase();
+    input = input.replaceAll("(", "");
+    input = input.replaceAll(")", "");
     let queue = [];
-    let stack = [];
-    for (let field in fields) {
-        if (field == "" || field == null) {
-            continue;
+    let str = "";
+    for (let i = 0; i < input.length; i++) {
+        if (input[i] == "(" || input[i] == ")" || input[i] == " ") {
+            if (str != "") {
+                queue.push(str);
+            }
+            if (input[i] != " ") {
+                queue.push(input[i]);
+            }
+            str = ""
         }
-        queue.push(field);
-    }
-    queue.reverse();
-    // x && y && x && t || z
-    while (queue.length != 0) {
-        let front = queue.pop();
-        if (front == "!") {
-            let bool = queue.pop();
-            stack.push(new Not())
-        } 
-        else if (front == "&&") {
-
-        }  
-        else if (front == "||") {
-
-        } 
         else {
-
+            str += input[i];
         }
     }
+    queue = queue.reverse();
+    return queue;
 }
+
+function tokenize(queue) {
+    
+}
+
+
