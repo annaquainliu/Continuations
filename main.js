@@ -1,16 +1,18 @@
-// import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
-const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
+import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+// const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
 
-// window.onload = () => {
-//     const body = document.getElementById("solution")
-//     const SatSolver = new SolveSat();
-//     const button = document.querySelector("button");
-//     const input = document.getElementById("formula");
+window.onload = () => {
+    const body = document.getElementById("solution")
+    const SatSolver = new SolveSat();
+    const button = document.querySelector("button");
+    const input = document.getElementById("formula");
 
-//     button.addEventListener("click", () => {
-//         let formula = parseInput(input.value);
-//     });
-// }
+    button.addEventListener("click", () => {
+        let formula = parseInput(input.value);
+        console.log(formula);
+        body.innerText = formula.toString();
+    });
+}
 
 /**
  * 
@@ -35,16 +37,17 @@ function parseInput(input) {
             str += input[i];
         }
     }
+    if (queue.length == 0 && input.length != 0) {
+        queue.push(input);
+    }
     queue = queue.reverse();
-    // return queue;
+    console.log(queue);
     return tokenize(queue);
 }
 
 // console.log(parseInput("(&& x y z (|| y b))").toString());
-
 // console.log(parseInput("(|| x (&& y !h))").toString());
 // console.log(parseInput("(&& !y z !a)").toString());
-console.log(parseInput())
 
 function tokenize(queue) {
     if (queue.length == 0) {
@@ -64,7 +67,7 @@ function tokenize(queue) {
     if (front == "||") {
         return new Or(symbols);
     }
-    throw new Error("ill-typed boolean formula.");
+    return new Symbol(front);
 } 
 
 function listTokenize(queue) {
@@ -88,4 +91,5 @@ function listTokenize(queue) {
     symbols.push(new Symbol(front));
     return symbols;
 }
+
 
