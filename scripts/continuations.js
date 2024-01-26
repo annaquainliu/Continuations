@@ -1,7 +1,25 @@
+// abstract class
 class BooleanFormula {
 
+    /**
+     * 
+     * @param {List<BooleanFormula>} args 
+     */
     constructor(args) {
         this.args = args;
+    }
+
+    toString(symbol) {
+        let str = "";
+        for (let i in this.args) {
+            if (i == this.args.length - 1) {
+                str += this.args[i].toString();
+            }
+            else {
+                str += this.args[i].toString() + " " + symbol + " ";
+            }
+        }
+        return str;
     }
 }
 
@@ -11,7 +29,11 @@ class Not extends BooleanFormula {
      * @param {BooleanFormula} formula 
      */
     constructor(formula) {
-        super(formula);
+        super([formula]);
+    }
+
+    toString() {
+        return "¬" + this.args[0].toString();
     }
 }
 
@@ -24,6 +46,10 @@ class And extends BooleanFormula {
     constructor(formulas) {
         super(formulas);
     }
+
+    toString() {
+        return "(" + super.toString("&&") + ")";
+    }
 }
 
 class Or extends BooleanFormula {
@@ -35,6 +61,10 @@ class Or extends BooleanFormula {
     constructor(formulas) {
         super(formulas);
     }
+
+    toString() {
+        return "(" + super.toString("||") + ")";
+    }
 }
 
 class Symbol extends BooleanFormula {
@@ -44,7 +74,11 @@ class Symbol extends BooleanFormula {
      * @param {String} string : Name of symbol
      */
     constructor(string) {
-        super(string);
+        super([string]);
+    }
+
+    toString() {
+        return this.args[0];
     }
 }
 
@@ -149,10 +183,10 @@ class SolveSat {
     solveFormula(f, bool, cur, fail, succ) {
         cur = JSON.parse(JSON.stringify(cur));
         if (f instanceof Symbol) {
-            return this.solveSymbol(f.args, bool, cur, fail, succ)
+            return this.solveSymbol(f.args[0], bool, cur, fail, succ)
         }
         else if (f instanceof Not) {
-            return this.solveFormula(f.args, !bool, cur, fail, succ)
+            return this.solveFormula(f.args[0], !bool, cur, fail, succ)
         }
         else if (f instanceof Or) {
             if (bool) {
@@ -184,4 +218,5 @@ class SolveSat {
         return this.solveFormula(f, true, {}, fail, succ)
     }
 }
-export {SolveSat, Not, And, Or, Symbol}
+// export {SolveSat, Not, And, Or, Symbol}
+module.exports = {SolveSat : SolveSat, Not : Not, And : And, Or : Or, Symbol : Symbol}

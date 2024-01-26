@@ -1,4 +1,5 @@
-import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+// import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
 
 // window.onload = () => {
 //     const body = document.getElementById("solution")
@@ -38,9 +39,7 @@ function parseInput(input) {
     return tokenize(queue);
 }
 
-console.log(parseInput("(&& x y z (|| y b))"));
-// (&& x y z (|| y b))
-// [), ), b, y, ||, (, z, y, x, &&, (]
+console.log(parseInput("(&& x y z (|| y b))").toString());
 
 function tokenize(queue) {
     if (queue.length == 0) {
@@ -50,7 +49,9 @@ function tokenize(queue) {
     if (front == "(") {
         return tokenize(queue);
     }
-
+    if (front == "!") {
+        return new Not(tokenize(queue));
+    }
     let symbols = listTokenize(queue);
     if (front == "&&") {
        return new And(symbols);
@@ -58,6 +59,7 @@ function tokenize(queue) {
     if (front == "||") {
         return new Or(symbols);
     }
+    throw new Error("ill-typed boolean formula.");
 } 
 
 function listTokenize(queue) {
@@ -66,7 +68,7 @@ function listTokenize(queue) {
     }
     let front = queue.pop();
     if (front ==  "(") {
-        return tokenize(queue);
+        return [tokenize(queue)];
     }
     if (front == ")") {
         return [];
