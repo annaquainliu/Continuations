@@ -81,9 +81,57 @@ class Symbol extends BooleanFormula {
     }
 
     toString() {
-        return this.args[0];
+        return "'" + this.args[0];
     }
 }
+
+function boolToString(bool) {
+    return bool ? "#t" : "#f";
+}
+
+/**
+ * @param {List<BooleanFormula>} formulas 
+ * @returns {String}
+ */
+function formulasToString(formulas) {
+    if (formulas.length == 0) {
+        return "[]";
+    }
+    let str = "[";
+    for (let f of formulas) {
+        str += f.toString() + ", ";
+    }
+    str = str.substring(0, str.length - 2);
+    str += "]";
+    return str;
+}
+/**
+ * Makes a function call into a string
+ * @param {String} name 
+ * @param {List<BooleanFormula> | BooleanFormula} fs 
+ * @param {Boolean} bool 
+ * @param {Map<String, Boolean>} curr 
+ * @param {FunctionObject} fail 
+ * @param {FunctionObject} succ 
+ * @returns {String}
+ */
+function funCallToString(name, fs, bool, curr, fail, succ) {
+    let str = "(" + name + " ";
+    if (fs instanceof BooleanFormula) {
+        str += fs.toString();
+    }
+    else {
+        str += formulasToString(fs);
+    }
+    str += " ";
+    str += boolToString(bool) + " ";
+    str += JSON.stringify(curr) + " ";
+    str += fail.string + " ";
+    str += succ.string + ")";
+    return str;
+}
+
+
 
 /**
  * 
@@ -95,7 +143,7 @@ function car(list) {
 }
 
 /**
- * 
+ * Deep copy cdr
  * @param {Object []} list 
  * @returns entire list except first element
  */
@@ -110,24 +158,34 @@ function cdr(list) {
 
 class SolveSat {
 
+    steps = [];
+    // tree;
+
+    reset() {
+        this.steps = [];
+    }
+
     /**
      * 
      * @param {BooleanFormula []} fs 
      * @param {Boolean} bool 
      * @param {JSON} cur 
-     * @param {Function} fail 
-     * @param {Function} succ 
+     * @param {FunctionObject} fail 
+     * @param {FunctionObject} succ 
      * @returns 
      */
     solveAny(fs, bool, cur, fail, succ) {
+        this.steps.push(funCallToString("solveAny", fs, bool, cur, fail, succ));
         cur = JSON.parse(JSON.stringify(cur));
         if (fs.length == 0) {
-            return fail();
+            this.steps.push("(" + fail.string + ")");
+            return fail.fun();
         }
         return this.solveFormula(car(fs), bool, cur, 
-        () => {
-            return this.solveAny(cdr(fs), bool, cur, fail, succ)
-        }, succ);
+        new FunctionObject("(lambda () " + funCallToString("solveAny", cdr(fs), bool, cur, fail, succ) + ")",
+            () => {
+                return this.solveAny(cdr(fs), bool, cur, fail, succ)
+            }), succ);
     }
 
     /**
@@ -135,41 +193,50 @@ class SolveSat {
      * @param {BooleanFormula []} fs 
      * @param {Boolean} bool 
      * @param {JSON} cur 
-     * @param {Function} fail 
-     * @param {Function} succ 
+     * @param {FunctionObject} fail 
+     * @param {FunctionObject} succ 
      * @returns 
      */
     solveAll(fs, bool, cur, fail, succ) {
+        this.steps.push(funCallToString("solveAll", fs, bool, cur, fail, succ));
         cur = JSON.parse(JSON.stringify(cur));
         if (fs.length == 0) {
-            return succ(cur, fail);
+            this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")");
+            return succ.fun(cur, fail);
         }
-        return this.solveFormula(car(fs), bool, cur, fail, (env, resume) => {
-            return this.solveAll(cdr(fs), bool, env, resume, succ);
-        });
+        return this.solveFormula(car(fs), bool, cur, fail, 
+        new FunctionObject("(lambda (env resume) " + "(solveAll " + formulasToString(cdr(fs)) + " " + boolToString(bool) + " env resume " + succ.string + ")", 
+            (env, resume) => {
+                return this.solveAll(cdr(fs), bool, env, resume, succ);
+            }));
     }
 
     /**
      * 
-     * @param {BooleanFormula} f
+     * @param {Symbol} f
      * @param {Boolean} bool 
      * @param {JSON} cur 
-     * @param {Function} fail 
-     * @param {Function} succ 
+     * @param {FunctionObject} fail 
+     * @param {FunctionObject} succ 
      * @returns 
      */
-    solveSymbol(f, bool, cur, fail, succ) {
+    solveSymbol(fSym, bool, cur, fail, succ) {
+        this.steps.push(funCallToString("solveSymbol", fSym, bool, cur, fail, succ));
         cur = JSON.parse(JSON.stringify(cur));
+        let f = fSym.args[0];
         if (cur[f] == null) {
             cur[f] = bool;
-            return succ(cur, fail);
+            this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")")
+            return succ.fun(cur, fail);
         } 
         else {
             if (cur[f] == bool) {
-                return succ(cur, fail);
+                this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")")
+                return succ.fun(cur, fail);
             }
             else {
-                return fail();
+                this.steps.push("(" + fail.string + ")");
+                return fail.fun();
             }
         }
     }
@@ -179,14 +246,15 @@ class SolveSat {
      * @param {BooleanFormula} f 
      * @param {Boolean} bool 
      * @param {JSON} cur 
-     * @param {Function} fail 
-     * @param {Function} succ 
+     * @param {FunctionObject} fail 
+     * @param {FunctionObject} succ 
      * @returns 
      */
     solveFormula(f, bool, cur, fail, succ) {
+        this.steps.push(funCallToString("solveFormula", f, bool, cur, fail, succ))
         cur = JSON.parse(JSON.stringify(cur));
         if (f instanceof Symbol) {
-            return this.solveSymbol(f.args[0], bool, cur, fail, succ)
+            return this.solveSymbol(f, bool, cur, fail, succ)
         }
         else if (f instanceof Not) {
             return this.solveFormula(f.args[0], !bool, cur, fail, succ)
@@ -218,7 +286,25 @@ class SolveSat {
      * @returns Value of the appropriate continuation call
      */
     solve(f, fail, succ) {
-        return this.solveFormula(f, true, {}, fail, succ)
+        return this.solveFormula(f, true, {}, new FunctionObject("(lambda () 'Fail!-NoSolution.)", fail), new FunctionObject("(lambda (curr resume) curr)", succ))
+    }
+}
+
+class FunctionObject {
+    
+    string;
+    fun;
+
+    /**
+     * Creates a FunctionObject that contains a 
+     * stringified version of a lambda.
+     * 
+     * @param {String} string 
+     * @param {Function} fun 
+     */
+    constructor(string, fun) {
+        this.string = string;
+        this.fun = fun;
     }
 }
 

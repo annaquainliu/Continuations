@@ -8,12 +8,9 @@ html, body {
 }
 
 #title {
-    margin: 5vw;
+    margin: 2vw;
 }
 
-button {
-    scale: 2;
-}
 
 #solution {
     width: 50vw;
@@ -27,7 +24,10 @@ button {
 }
 
 #formula {
-    scale: 2;
+    width: 30%;
+    margin: 10px;
+    height: 5vh;
+
 }
 
 body {

@@ -3,14 +3,22 @@ import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
 
 window.onload = () => {
     const body = document.getElementById("solution")
+    const steps = document.getElementById("steps");
     const SatSolver = new SolveSat();
     const button = document.querySelector("button");
     const input = document.getElementById("formula");
 
     button.addEventListener("click", () => {
+        SatSolver.reset();
+        steps.innerHTML = "";
         let formula = parseInput(input.value);
-        console.log(formula);
-        body.innerText = formula.toString();
+        let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
+        body.innerText = answer;
+        for (let step of SatSolver.steps) {
+            let child = document.createElement("p");
+            child.innerText = step;
+            steps.appendChild(child);
+        }
     });
 }
 
@@ -57,9 +65,6 @@ function tokenize(queue) {
     if (front == "(") {
         return tokenize(queue);
     }
-    if (front == "!" && queue[1] == "(") {
-        return new Not(tokenize(queue));
-    }
     let symbols = listTokenize(queue);
     if (front == "&&") {
        return new And(symbols);
@@ -91,5 +96,4 @@ function listTokenize(queue) {
     symbols.push(new Symbol(front));
     return symbols;
 }
-
 
