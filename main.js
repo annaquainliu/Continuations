@@ -22,7 +22,7 @@ function parseInput(input) {
     let queue = [];
     let str = "";
     for (let i = 0; i < input.length; i++) {
-        if (input[i] == "(" || input[i] == ")" || input[i] == " ") {
+        if (input[i] == "(" || input[i] == ")" || input[i] == " " || input[i] == "!") {
             if (str != "") {
                 queue.push(str);
             }
@@ -36,12 +36,15 @@ function parseInput(input) {
         }
     }
     queue = queue.reverse();
+    // return queue;
     return tokenize(queue);
 }
 
 // console.log(parseInput("(&& x y z (|| y b))").toString());
 
-console.log(parseInput("(|| x (&& y))").toString());
+// console.log(parseInput("(|| x (&& y !h))").toString());
+// console.log(parseInput("(&& !y z !a)").toString());
+console.log(parseInput())
 
 function tokenize(queue) {
     if (queue.length == 0) {
@@ -51,7 +54,7 @@ function tokenize(queue) {
     if (front == "(") {
         return tokenize(queue);
     }
-    if (front == "!") {
+    if (front == "!" && queue[1] == "(") {
         return new Not(tokenize(queue));
     }
     let symbols = listTokenize(queue);
@@ -75,7 +78,13 @@ function listTokenize(queue) {
     if (front == ")") {
         return [];
     }
-    let symbols = listTokenize(queue);
+    if (front == "!") {
+        front = queue.pop();
+        let symbols = listTokenize(queue);
+        symbols.push(new Not(new Symbol(front)));
+        return symbols;
+    }
+    let symbols = listTokenize(queue)
     symbols.push(new Symbol(front));
     return symbols;
 }
