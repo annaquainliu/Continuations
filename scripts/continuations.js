@@ -10,6 +10,9 @@ class BooleanFormula {
     }
 
     toString(symbol) {
+        if (this.args.length == 1) {
+            return symbol + " " + this.args[0].toString();
+        }
         let str = "";
         for (let i in this.args) {
             if (i == this.args.length - 1) {

@@ -39,7 +39,9 @@ function parseInput(input) {
     return tokenize(queue);
 }
 
-console.log(parseInput("(&& x y z (|| y b))").toString());
+// console.log(parseInput("(&& x y z (|| y b))").toString());
+
+console.log(parseInput("(|| x (&& y))").toString());
 
 function tokenize(queue) {
     if (queue.length == 0) {
