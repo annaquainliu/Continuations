@@ -7,6 +7,10 @@ Website that demonstrates the steps to SAT solving (or boolean formula solving.)
 BF stands for BooleanFormula
 
 BF := (&& BF_1, ..., BF_n)
+
    |  (|| BF_1, ..., BF_n)
+   
    |  !BF
+   
    |  symvalue
+   
