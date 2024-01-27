@@ -10,9 +10,9 @@ Website that demonstrates the steps to SAT solving (or boolean formula solving.)
 
 *BF* := (&& *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  !*BF*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  !*BF*
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  *sym*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  *sym*
 
