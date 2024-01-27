@@ -308,5 +308,5 @@ class FunctionObject {
     }
 }
 
-export {SolveSat, Not, And, Or, Symbol}
-// module.exports = {SolveSat : SolveSat, Not : Not, And : And, Or : Or, Symbol : Symbol}
+// export {SolveSat, Not, And, Or, Symbol}
+module.exports = {SolveSat : SolveSat, Not : Not, And : And, Or : Or, Symbol : Symbol}

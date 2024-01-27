@@ -1,27 +1,27 @@
-import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
-// const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
+// import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
 
-window.onload = () => {
-    const body = document.getElementById("solution")
-    const steps = document.getElementById("steps");
-    const SatSolver = new SolveSat();
-    const button = document.querySelector("button");
-    const input = document.getElementById("formula");
+// window.onload = () => {
+//     const body = document.getElementById("solution")
+//     const steps = document.getElementById("steps");
+//     const SatSolver = new SolveSat();
+//     const button = document.querySelector("button");
+//     const input = document.getElementById("formula");
 
-    button.addEventListener("click", () => {
-        SatSolver.reset();
-        steps.innerHTML = "";
-        let formula = parseInput(input.value);
-        console.log(formula);
-        let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
-        body.innerText = answer;
-        for (let step of SatSolver.steps) {
-            let child = document.createElement("p");
-            child.innerText = step;
-            steps.appendChild(child);
-        }
-    });
-}
+//     button.addEventListener("click", () => {
+//         SatSolver.reset();
+//         steps.innerHTML = "";
+//         let formula = parseInput(input.value);
+//         console.log(formula);
+//         let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
+//         body.innerText = answer;
+//         for (let step of SatSolver.steps) {
+//             let child = document.createElement("p");
+//             child.innerText = step;
+//             steps.appendChild(child);
+//         }
+//     });
+// }
 
 /**
  * 
@@ -57,6 +57,7 @@ function parseInput(input) {
 // console.log(parseInput("(&& x y z (|| y b))").toString());
 // console.log(parseInput("(|| x (&& y !h))").toString());
 // console.log(parseInput("(&& !y z !a)").toString());
+// console.log(parseInput("(&& x y !(|| z b !(|| b d g)))").toString());
 
 function tokenize(queue) {
     if (queue.length == 0) {
@@ -66,14 +67,15 @@ function tokenize(queue) {
     if (front == "(") {
         return tokenize(queue);
     }
-    if (front == "!" && queue[queue.length - 1] == "(") {
+    if (front == "!") {
         return new Not(tokenize(queue));
     }
-    let symbols = listTokenize(queue);
     if (front == "&&") {
+       let symbols = listTokenize(queue);
        return new And(symbols);
     }
     if (front == "||") {
+        let symbols = listTokenize(queue);
         return new Or(symbols);
     }
     return new Symbol(front);
@@ -81,23 +83,16 @@ function tokenize(queue) {
 
 function listTokenize(queue) {
     if (queue.length == 0) {
-        return [];
+        throw new Error("Ill typed!!!!");
     }
-    let front = queue.pop();
-    if (front ==  "(") {
-        return [tokenize(queue)];
+    let symbols = [];
+    let front = queue[queue.length - 1];
+    while (queue.length != 0 && front != ")") {
+        symbols.push(tokenize(queue));
+        front = queue[queue.length - 1];
     }
     if (front == ")") {
-        return [];
+        queue.pop();
     }
-    if (front == "!") {
-        front = queue.pop();
-        let symbols = listTokenize(queue);
-        symbols.push(new Not(new Symbol(front)));
-        return symbols;
-    }
-    let symbols = listTokenize(queue)
-    symbols.push(new Symbol(front));
     return symbols;
 }
-
