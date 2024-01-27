@@ -10,18 +10,15 @@ class BooleanFormula {
     }
 
     toString(symbol) {
-        if (this.args.length == 1) {
-            return symbol + " " + this.args[0].toString();
+        let str = symbol + "(";
+        if (this.args.length == 0) {
+            str += ")";
+            return str;
         }
-        let str = "";
-        for (let i in this.args) {
-            if (i == this.args.length - 1) {
-                str += this.args[i].toString();
-            }
-            else {
-                str += this.args[i].toString() + " " + symbol + " ";
-            }
-        }
+        for (let arg of this.args) {
+            str += arg + ", ";
+        } 
+        str = str.substring(0, str.length - 2) + ")";
         return str;
     }
 }
@@ -36,7 +33,7 @@ class Not extends BooleanFormula {
     }
 
     toString() {
-        return "¬" + this.args[0].toString();
+        return super.toString("Not");
     }
 }
 
@@ -51,7 +48,7 @@ class And extends BooleanFormula {
     }
 
     toString() {
-        return "(" + super.toString("&&") + ")";
+        return super.toString("And");
     }
 }
 
@@ -66,7 +63,7 @@ class Or extends BooleanFormula {
     }
 
     toString() {
-        return "(" + super.toString("||") + ")";
+        return super.toString("Or");
     }
 }
 
@@ -308,5 +305,5 @@ class FunctionObject {
     }
 }
 
-// export {SolveSat, Not, And, Or, Symbol}
-module.exports = {SolveSat : SolveSat, Not : Not, And : And, Or : Or, Symbol : Symbol}
+export {SolveSat, Not, And, Or, Symbol}
+// module.exports = {SolveSat : SolveSat, Not : Not, And : And, Or : Or, Symbol : Symbol}

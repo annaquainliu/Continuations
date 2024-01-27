@@ -1,27 +1,27 @@
-// import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
-const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
+import {SolveSat, Not, And, Or, Symbol} from "./scripts/continuations.js";
+// const {SolveSat, Not, And, Or, Symbol} = require("./scripts/continuations");
 
-// window.onload = () => {
-//     const body = document.getElementById("solution")
-//     const steps = document.getElementById("steps");
-//     const SatSolver = new SolveSat();
-//     const button = document.querySelector("button");
-//     const input = document.getElementById("formula");
+window.onload = () => {
+    const body = document.getElementById("solution")
+    const steps = document.getElementById("steps");
+    const SatSolver = new SolveSat();
+    const button = document.querySelector("button");
+    const input = document.getElementById("formula");
 
-//     button.addEventListener("click", () => {
-//         SatSolver.reset();
-//         steps.innerHTML = "";
-//         let formula = parseInput(input.value);
-//         console.log(formula);
-//         let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
-//         body.innerText = answer;
-//         for (let step of SatSolver.steps) {
-//             let child = document.createElement("p");
-//             child.innerText = step;
-//             steps.appendChild(child);
-//         }
-//     });
-// }
+    button.addEventListener("click", () => {
+        SatSolver.reset();
+        steps.innerHTML = "";
+        let formula = parseInput(input.value);
+        console.log(formula);
+        let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
+        body.innerText = answer;
+        for (let step of SatSolver.steps) {
+            let child = document.createElement("p");
+            child.innerText = step;
+            steps.appendChild(child);
+        }
+    });
+}
 
 /**
  * 
@@ -57,7 +57,7 @@ function parseInput(input) {
 // console.log(parseInput("(&& x y z (|| y b))").toString());
 // console.log(parseInput("(|| x (&& y !h))").toString());
 // console.log(parseInput("(&& !y z !a)").toString());
-// console.log(parseInput("(&& x y !(|| z b !(|| b d g)))").toString());
+// console.log(parseInput("(&& x !(|| z !(|| b x c)))").toString());
 
 function tokenize(queue) {
     if (queue.length == 0) {
