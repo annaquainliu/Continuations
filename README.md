@@ -9,6 +9,10 @@ Website that demonstrates the steps to SAT solving (or boolean formula solving.)
 - <img src="https://latex.codecogs.com/gif.latex?O_t=\text { Onset event at time bin } t " />
 
 *BF* := (&& *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
-&nbsp;|  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
-&nbsp;|  !*BF*
-&nbsp;|  *sym*
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  !*BF*
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  *sym*
+
