@@ -37,6 +37,10 @@ body {
     align-items: center;
 }
 
-p:hover {
+.succCont {
+    color: green;
+}
+
+.failCont {
     color: red;
 }

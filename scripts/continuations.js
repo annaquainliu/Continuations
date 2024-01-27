@@ -102,6 +102,7 @@ function formulasToString(formulas) {
     str += "]";
     return str;
 }
+
 /**
  * Makes a function call into a string
  * @param {String} name 
@@ -123,8 +124,8 @@ function funCallToString(name, fs, bool, curr, fail, succ) {
     str += " ";
     str += boolToString(bool) + " ";
     str += JSON.stringify(curr) + " ";
-    str += fail.string + " ";
-    str += succ.string + ")";
+    str += fail.toString() + " ";
+    str += succ.toString() + ")";
     return str;
 }
 
@@ -169,17 +170,17 @@ class SolveSat {
      * @param {JSON} cur 
      * @param {FunctionObject} fail 
      * @param {FunctionObject} succ 
-     * @returns 
+     * @returns {Map<String, Boolean>}
      */
     solveAny(fs, bool, cur, fail, succ) {
         this.steps.push(funCallToString("solveAny", fs, bool, cur, fail, succ));
         cur = JSON.parse(JSON.stringify(cur));
         if (fs.length == 0) {
-            this.steps.push("(" + fail.string + ")");
+            this.steps.push("(" + fail.toString() + ")");
             return fail.fun();
         }
         return this.solveFormula(car(fs), bool, cur, 
-        new FunctionObject("(lambda () " + funCallToString("solveAny", cdr(fs), bool, cur, fail, succ) + ")",
+        new FailCont("(lambda () " + funCallToString("solveAny", cdr(fs), bool, cur, fail, succ) + ")",
             () => {
                 return this.solveAny(cdr(fs), bool, cur, fail, succ)
             }), succ);
@@ -192,17 +193,17 @@ class SolveSat {
      * @param {JSON} cur 
      * @param {FunctionObject} fail 
      * @param {FunctionObject} succ 
-     * @returns 
+     * @returns {Map<String, Boolean>}
      */
     solveAll(fs, bool, cur, fail, succ) {
         this.steps.push(funCallToString("solveAll", fs, bool, cur, fail, succ));
         cur = JSON.parse(JSON.stringify(cur));
         if (fs.length == 0) {
-            this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")");
+            this.steps.push("(" + succ.toString() + " " + JSON.stringify(cur) + " " + fail.toString() + ")");
             return succ.fun(cur, fail);
         }
         return this.solveFormula(car(fs), bool, cur, fail, 
-        new FunctionObject("(lambda (env resume) " + "(solveAll " + formulasToString(cdr(fs)) + " " + boolToString(bool) + " env resume " + succ.string + ")", 
+        new SuccessCont("(lambda (env resume) " + "(solveAll " + formulasToString(cdr(fs)) + " " + boolToString(bool) + " env resume " + succ.string + ")", 
             (env, resume) => {
                 return this.solveAll(cdr(fs), bool, env, resume, succ);
             }));
@@ -215,7 +216,7 @@ class SolveSat {
      * @param {JSON} cur 
      * @param {FunctionObject} fail 
      * @param {FunctionObject} succ 
-     * @returns 
+     * @returns {Map<String, Boolean>}
      */
     solveSymbol(fSym, bool, cur, fail, succ) {
         this.steps.push(funCallToString("solveSymbol", fSym, bool, cur, fail, succ));
@@ -223,16 +224,17 @@ class SolveSat {
         let f = fSym.args[0];
         if (cur[f] == null) {
             cur[f] = bool;
-            this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")")
+            this.steps.push("(" + succ.toString() + " " + JSON.stringify(cur) + " " + fail.toString() + ")")
+            console.log(succ.toString());
             return succ.fun(cur, fail);
         } 
         else {
             if (cur[f] == bool) {
-                this.steps.push("(" + succ.string + " " + JSON.stringify(cur) + " " + fail.string + ")")
+                this.steps.push("(" + succ.toString() + " " + JSON.stringify(cur) + " " + fail.toString() + ")")
                 return succ.fun(cur, fail);
             }
             else {
-                this.steps.push("(" + fail.string + ")");
+                this.steps.push("(" + fail.toString() + ")");
                 return fail.fun();
             }
         }
@@ -245,7 +247,7 @@ class SolveSat {
      * @param {JSON} cur 
      * @param {FunctionObject} fail 
      * @param {FunctionObject} succ 
-     * @returns 
+     * @returns {Map<String, Boolean>}
      */
     solveFormula(f, bool, cur, fail, succ) {
         this.steps.push(funCallToString("solveFormula", f, bool, cur, fail, succ))
@@ -280,10 +282,10 @@ class SolveSat {
      * @param {BooleanFormula} f : Boolean formula SolveSat will try to solve
      * @param {Function} fail : 0 parameters, called when no solution is found
      * @param {Function} succ : 2 parameters, called when solution is found
-     * @returns Value of the appropriate continuation call
+     * @returns {Map<String, Boolean>} Value of the appropriate continuation call
      */
     solve(f, fail, succ) {
-        return this.solveFormula(f, true, {}, new FunctionObject("(lambda () 'Fail!-NoSolution.)", fail), new FunctionObject("(lambda (curr resume) curr)", succ))
+        return this.solveFormula(f, true, {}, new FailCont("(lambda () 'Fail!-NoSolution.)", fail), new SuccessCont("(lambda (curr resume) curr)", succ))
     }
 }
 
@@ -291,6 +293,7 @@ class FunctionObject {
     
     string;
     fun;
+    color;
 
     /**
      * Creates a FunctionObject that contains a 
@@ -302,6 +305,31 @@ class FunctionObject {
     constructor(string, fun) {
         this.string = string;
         this.fun = fun;
+        this.color = "";
+    }
+}
+
+class SuccessCont extends FunctionObject {
+
+    constructor(string, fun) {
+        super(string, fun);
+        this.color = "green";
+    }
+
+    toString() {
+        return `<span class='succCont'> ${this.string} </span>`;
+    }
+}
+
+class FailCont extends FunctionObject {
+
+    constructor(string, fun) {
+        super(string, fun);
+        this.color = "red";
+    }
+
+    toString() {
+        return `<span class='failCont'> ${this.string} </span>`;
     }
 }
 

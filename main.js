@@ -17,7 +17,7 @@ window.onload = () => {
         body.innerText = answer;
         for (let step of SatSolver.steps) {
             let child = document.createElement("p");
-            child.innerText = step;
+            child.innerHTML = step;
             steps.appendChild(child);
         }
     });
