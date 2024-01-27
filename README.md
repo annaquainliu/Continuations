@@ -14,3 +14,9 @@ Website that demonstrates the steps to SAT solving (or boolean formula solving.)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  *sym*
 
+### Examples
+- (&& x y z) *(This is equivalent to x && y && z)*
+- (|| x y z)
+- (|| x (&& y z)) *(This is equivalent to (x || (y && z)))*
+- (|| !x !y) *(This is equivalent to (!x || !y))*
+- !(|| z y) *(This is equivalent to !(z || y))*
