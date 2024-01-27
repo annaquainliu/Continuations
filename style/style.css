@@ -36,3 +36,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+p:hover {
+    color: red;
+}

@@ -12,6 +12,7 @@ window.onload = () => {
         SatSolver.reset();
         steps.innerHTML = "";
         let formula = parseInput(input.value);
+        console.log(formula);
         let answer = SatSolver.solve(formula, () => "Fail! No Solution.", (curr, resume) => JSON.stringify(curr));
         body.innerText = answer;
         for (let step of SatSolver.steps) {
@@ -64,6 +65,9 @@ function tokenize(queue) {
     let front = queue.pop();
     if (front == "(") {
         return tokenize(queue);
+    }
+    if (front == "!" && queue[queue.length - 1] == "(") {
+        return new Not(tokenize(queue));
     }
     let symbols = listTokenize(queue);
     if (front == "&&") {
