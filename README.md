@@ -6,10 +6,9 @@ Website that demonstrates the steps to SAT solving (or boolean formula solving.)
 ## Syntax
 *BF* stands for BooleanFormula
 
+```
 *BF* := (&& *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
-
-   |  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
-   
-   |  !*BF*
-   
-   |  *sym*
+      |  (|| *BF*<sub>1</sub>, ..., *BF*<sub>n</sub>)
+      |  !*BF*
+      |  *sym*
+```
