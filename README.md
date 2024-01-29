@@ -1,7 +1,7 @@
 # Continuations
 
 ## Summary
-Website that demonstrates the steps to SAT solving (or boolean formula solving.) The input takes one boolean formula, and outputs the answer that satisfies the formula, along with the steps that the SAT solver takes to come to the solution.
+This [website](https://annaquainliu.github.io/Continuations/) that demonstrates the steps to SAT solving (or boolean formula solving.) The input takes one boolean formula, and outputs the answer that satisfies the formula, along with the steps that the SAT solver takes to come to the solution.
 
 Anything highlighted in green is the success continuation, while anything highlighted in red is the failure continuation.
 
